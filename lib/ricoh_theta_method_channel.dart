@@ -9,13 +9,26 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   final methodChannel = const MethodChannel('ricoh_theta');
 
   @override
+  Future setTargetIp(String? ipAddress) async {
+    return methodChannel.invokeMethod<String>('setTargetIp', {
+      'ipAddress': ipAddress ?? '192.168.1.1',
+    });
+  }
+
+  @override
+  Future disconnect() {
+    return methodChannel.invokeMethod<String>('disconnect');
+  }
+
+  @override
   Future<DeviceInfo?> getDeviceInfo() async {
-    final data = await methodChannel.invokeMapMethod<String, String>('getDeviceInfo');
+    final data =
+        await methodChannel.invokeMapMethod<String, String>('getDeviceInfo');
     return data != null ? DeviceInfo.fromMap(data) : null;
   }
 
   @override
-  Future init() async {
-    return methodChannel.invokeMethod<String>('init');
-  }
+  Future<String?> takePicture() {
+    return methodChannel.invokeMethod<String>('takePicture');
+  }  
 }

@@ -17,11 +17,19 @@ abstract class RicohThetaPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future init() {
-    throw UnimplementedError('init() has not been implemented.');
+  Future disconnect() {
+    throw UnimplementedError('disconnect() has not been implemented.');
+  }
+
+  Future setTargetIp(String? ipAddress) {
+    throw UnimplementedError('setTargetIp() has not been implemented.');
   }
 
   Future<DeviceInfo?> getDeviceInfo() {
     throw UnimplementedError('getDeviceInfo() has not been implemented.');
+  }
+
+  Future<String?> takePicture() {
+    throw UnimplementedError('takePicture() has not been implemented.');
   }
 }

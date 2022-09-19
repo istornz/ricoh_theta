@@ -1,50 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:ricoh_theta/models/device_info.dart';
-import 'package:ricoh_theta/ricoh_theta.dart';
+import 'package:ricoh_theta_example/pages/connect.dart';
+import 'package:ricoh_theta_example/pages/home.dart';
+import 'package:ricoh_theta_example/pages/settings.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const RicohThetaApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class RicohThetaApp extends StatefulWidget {
+  const RicohThetaApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<RicohThetaApp> createState() => _RicohThetaAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  DeviceInfo? _deviceInfo;
-  final _ricohThetaPlugin = RicohTheta();
-
+class _RicohThetaAppState extends State<RicohThetaApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Ricoh Theta Plugin'),
-        ),
-        body: Column(children: [
-          ElevatedButton(
-            onPressed: () async {
-              _ricohThetaPlugin.init();
-            },
-            child: const Text('Init'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final data = await _ricohThetaPlugin.getDeviceInfo();
-              setState(() {
-                _deviceInfo = data;
-              });
-            },
-            child: const Text('Get device data'),
-          ),
-          Text(_deviceInfo?.model ?? ''),
-          Text(_deviceInfo?.serialNumber ?? ''),
-          Text(_deviceInfo?.firmwareVersion ?? ''),
-        ]),
-      ),
+      initialRoute: '/connect',
+      routes: {
+        '/connect': (context) => const ConnectPage(),
+        '/home': (context) => const HomePage(),
+        '/settings': (context) => const SettingsPage(),
+      },
     );
   }
 }

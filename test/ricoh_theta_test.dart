@@ -13,14 +13,26 @@ class MockRicohThetaPlatform
   // Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
-  Future init() {
-    // TODO: implement getDeviceInfo
+  Future setTargetIp(String? ipAddress) {
+    // TODO: implement setTargetIp
     throw UnimplementedError();
   }
   
   @override
   Future<DeviceInfo?> getDeviceInfo() {
     // TODO: implement getDeviceInfo
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> takePicture() {
+    // TODO: implement takePicture
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future disconnect() {
+    // TODO: implement disconnect
     throw UnimplementedError();
   }
 }

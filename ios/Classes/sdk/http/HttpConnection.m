@@ -157,10 +157,12 @@
                               info.firmware_version = [array valueForKeyPath:@"firmwareVersion"];
                               info.serial_number = [array valueForKeyPath:@"serialNumber"];
                               NSLog(@"result: %@", data);
+                              block(info);
                           } else {
                               NSLog(@"error: %@", error);
+                              block(nil);
                           }
-                          block(info);
+                          
                       }];
     [task resume];
 }
