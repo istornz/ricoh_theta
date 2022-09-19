@@ -8,8 +8,14 @@ class MockRicohThetaPlatform
     with MockPlatformInterfaceMixin
     implements RicohThetaPlatform {
 
+  // @override
+  // Future<String?> getPlatformVersion() => Future.value('42');
+  
   @override
-  Future<String?> getPlatformVersion() => Future.value('42');
+  Future<String?> getDeviceInfo() {
+    // TODO: implement getDeviceInfo
+    throw UnimplementedError();
+  }
 }
 
 void main() {
@@ -19,11 +25,11 @@ void main() {
     expect(initialPlatform, isInstanceOf<MethodChannelRicohTheta>());
   });
 
-  test('getPlatformVersion', () async {
-    RicohTheta ricohThetaPlugin = RicohTheta();
-    MockRicohThetaPlatform fakePlatform = MockRicohThetaPlatform();
-    RicohThetaPlatform.instance = fakePlatform;
+  // test('getPlatformVersion', () async {
+  //   RicohTheta ricohThetaPlugin = RicohTheta();
+  //   MockRicohThetaPlatform fakePlatform = MockRicohThetaPlatform();
+  //   RicohThetaPlatform.instance = fakePlatform;
 
-    expect(await ricohThetaPlugin.getPlatformVersion(), '42');
-  });
+  //   expect(await ricohThetaPlugin.getPlatformVersion(), '42');
+  // });
 }
