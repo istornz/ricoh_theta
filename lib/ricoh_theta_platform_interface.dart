@@ -21,6 +21,10 @@ abstract class RicohThetaPlatform extends PlatformInterface {
     throw UnimplementedError('disconnect() has not been implemented.');
   }
 
+  Future<num?> batteryLevel() {
+    throw UnimplementedError('batteryLevel() has not been implemented.');
+  }
+
   Future setTargetIp(String? ipAddress) {
     throw UnimplementedError('setTargetIp() has not been implemented.');
   }

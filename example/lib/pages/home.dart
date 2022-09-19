@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
               if (picturePath == null) {
                 return;
               }
-              
+
               showResultDialog(
                 context,
                 child: Image.file(
@@ -45,6 +45,11 @@ class _HomePageState extends State<HomePage> {
               );
             },
             child: const Text('Take picture'),
+          ),
+          Expanded(
+            child: ListView(
+              children: [],
+            ),
           ),
         ],
       ),

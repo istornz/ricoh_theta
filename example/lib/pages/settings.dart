@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ricoh_theta/models/device_info.dart';
 import 'package:ricoh_theta/ricoh_theta.dart';
 import 'package:ricoh_theta_example/utils.dart';
 
@@ -38,6 +37,19 @@ class _SettingsPageState extends State<SettingsPage> {
               );
             },
             child: const Text('Get device data'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final batteryLevel = await _ricohThetaPlugin.batteryLevel();
+              if (batteryLevel == null) {
+                return;
+              }
+              showResultDialog(
+                context,
+                child: Text('Battery: $batteryLevel %'),
+              );
+            },
+            child: const Text('Get battery level'),
           ),
           ElevatedButton(
             onPressed: () async {

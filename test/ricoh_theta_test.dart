@@ -9,46 +9,58 @@ class MockRicohThetaPlatform
     with MockPlatformInterfaceMixin
     implements RicohThetaPlatform {
 
-  // @override
-  // Future<String?> getPlatformVersion() => Future.value('42');
-
   @override
-  Future setTargetIp(String? ipAddress) {
-    // TODO: implement setTargetIp
-    throw UnimplementedError();
-  }
+  Future setTargetIp(String? ipAddress) => Future.value();
   
   @override
-  Future<DeviceInfo?> getDeviceInfo() {
-    // TODO: implement getDeviceInfo
-    throw UnimplementedError();
-  }
+  Future<DeviceInfo?> getDeviceInfo() => Future.value(
+    DeviceInfo(
+      model: 'Tetha Model S',
+      firmwareVersion: '10.0.0',
+      serialNumber: 'ABC123',
+    ),
+  );
 
   @override
-  Future<String?> takePicture() {
-    // TODO: implement takePicture
-    throw UnimplementedError();
-  }
+  Future<String?> takePicture() => Future.value('/tmp/image.jpg');
   
   @override
-  Future disconnect() {
-    // TODO: implement disconnect
-    throw UnimplementedError();
-  }
+  Future disconnect() => Future.value();
+  
+  @override
+  Future<num?> batteryLevel() => Future.value(32.3);
 }
 
 void main() {
   final RicohThetaPlatform initialPlatform = RicohThetaPlatform.instance;
+  RicohTheta ricohThetaPlugin = RicohTheta();
+  MockRicohThetaPlatform fakePlatform = MockRicohThetaPlatform();
+  RicohThetaPlatform.instance = fakePlatform;
 
   test('$MethodChannelRicohTheta is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelRicohTheta>());
   });
 
-  // test('getPlatformVersion', () async {
-  //   RicohTheta ricohThetaPlugin = RicohTheta();
-  //   MockRicohThetaPlatform fakePlatform = MockRicohThetaPlatform();
-  //   RicohThetaPlatform.instance = fakePlatform;
+  test('getPlatformVersion', () async {
+    final model = await ricohThetaPlugin.getDeviceInfo();
+    expect(model?.model, 'Tetha Model S');
+    expect(model?.firmwareVersion, '10.0.0');
+    expect(model?.serialNumber, 'ABC123');
+  });
 
-  //   expect(await ricohThetaPlugin.getPlatformVersion(), '42');
-  // });
+  test('disconnect', () async {
+    expect(await ricohThetaPlugin.disconnect(), null);
+  });
+
+  test('setTargetIp', () async {
+    expect(await ricohThetaPlugin.setTargetIp('192.168.1.2'), null);
+  });
+
+  test('takePicture', () async {
+    expect(await ricohThetaPlugin.takePicture(), '/tmp/image.jpg');
+  });
+
+  test('batteryLevel', () async {
+    expect(await ricohThetaPlugin.batteryLevel(), 32.3);
+  });
 }

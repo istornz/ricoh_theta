@@ -26,6 +26,8 @@
     [self _handleSetTargetIp:call result:result];
   } else if ([@"disconnect" isEqualToString:call.method]) {
     [self _handleDisconnect:call result:result];
+  } else if ([@"batteryLevel" isEqualToString:call.method]) {
+    [self _handleBatteryLevel:call result:result];
   } else if ([@"getDeviceInfo" isEqualToString:call.method]) {
     [self _handleDeviceInfo:call result:result];
   } else if ([@"takePicture" isEqualToString:call.method]) {
@@ -33,6 +35,10 @@
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)_handleBatteryLevel:(FlutterMethodCall*)call result:(FlutterResult)result {
+  result([_httpConnection getBatteryLevel]);
 }
 
 - (void)_handleDisconnect:(FlutterMethodCall*)call result:(FlutterResult)result {

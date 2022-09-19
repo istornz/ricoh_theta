@@ -21,6 +21,11 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   }
 
   @override
+  Future<num?> batteryLevel() {
+    return methodChannel.invokeMethod<num>('batteryLevel');
+  }
+
+  @override
   Future<DeviceInfo?> getDeviceInfo() async {
     final data =
         await methodChannel.invokeMapMethod<String, String>('getDeviceInfo');
