@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ricoh_theta/models/device_info.dart';
 import 'package:ricoh_theta/ricoh_theta.dart';
 import 'package:ricoh_theta/ricoh_theta_platform_interface.dart';
 import 'package:ricoh_theta/ricoh_theta_method_channel.dart';
@@ -10,9 +11,15 @@ class MockRicohThetaPlatform
 
   // @override
   // Future<String?> getPlatformVersion() => Future.value('42');
+
+  @override
+  Future init() {
+    // TODO: implement getDeviceInfo
+    throw UnimplementedError();
+  }
   
   @override
-  Future<String?> getDeviceInfo() {
+  Future<DeviceInfo?> getDeviceInfo() {
     // TODO: implement getDeviceInfo
     throw UnimplementedError();
   }

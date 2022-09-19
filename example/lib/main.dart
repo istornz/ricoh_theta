@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
+import 'package:ricoh_theta/models/device_info.dart';
 import 'package:ricoh_theta/ricoh_theta.dart';
 
 void main() {
@@ -16,6 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  DeviceInfo? _deviceInfo;
   final _ricohThetaPlugin = RicohTheta();
 
   @override
@@ -28,11 +27,22 @@ class _MyAppState extends State<MyApp> {
         body: Column(children: [
           ElevatedButton(
             onPressed: () async {
-              final data = _ricohThetaPlugin.getDeviceInfo();
-              print(data);
+              _ricohThetaPlugin.init();
+            },
+            child: const Text('Init'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final data = await _ricohThetaPlugin.getDeviceInfo();
+              setState(() {
+                _deviceInfo = data;
+              });
             },
             child: const Text('Get device data'),
-          )
+          ),
+          Text(_deviceInfo?.model ?? ''),
+          Text(_deviceInfo?.serialNumber ?? ''),
+          Text(_deviceInfo?.firmwareVersion ?? ''),
         ]),
       ),
     );

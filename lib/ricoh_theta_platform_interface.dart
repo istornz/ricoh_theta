@@ -1,4 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:ricoh_theta/models/device_info.dart';
 
 import 'ricoh_theta_method_channel.dart';
 
@@ -16,7 +17,11 @@ abstract class RicohThetaPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getDeviceInfo() {
+  Future init() {
+    throw UnimplementedError('init() has not been implemented.');
+  }
+
+  Future<DeviceInfo?> getDeviceInfo() {
     throw UnimplementedError('getDeviceInfo() has not been implemented.');
   }
 }
