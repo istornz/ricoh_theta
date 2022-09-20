@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly, nonatomic) HttpConnection *httpConnection;
 
 - (void)takePicture;
+- (void)startLiveView;
 - (void)setResult:(FlutterResult _Nonnull)result;
 - (void)setHttpConnection:(HttpConnection * _Nonnull)httpConnection;
 

@@ -32,7 +32,11 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
+          Flexible(
+            child: Container(color: Colors.red),
+          ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
                 onPressed: () async {
@@ -58,7 +62,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Expanded(
+          Flexible(
             child: ListView.builder(
               itemCount: _imageInfoes.length,
               itemBuilder: (context, index) {

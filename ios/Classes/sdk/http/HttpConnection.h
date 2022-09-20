@@ -35,7 +35,11 @@
 
 - (void)startLiveView:(void(^ const)(NSData *frameData))block;
 
-- (void)restartLiveView;
+- (void)stopLiveView;
+
+- (void)pauseLiveView;
+
+- (void)resumeLiveView;
 
 - (HttpImageInfo*)takePicture;
 

@@ -365,10 +365,28 @@
 }
 
 /**
+ * Pause live view
+ */
+- (void)pauseLiveView
+{
+  [_stream cancel];
+}
+
+/**
  * Resume live view
  */
-- (void)restartLiveView
+- (void)resumeLiveView
 {
+  [_stream getData];
+}
+
+/**
+ * Stop live view
+ */
+- (void)stopLiveView
+{
+  [_stream cancel];
+  _stream = nil;
 }
 
 /**

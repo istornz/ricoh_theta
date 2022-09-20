@@ -35,6 +35,8 @@
     [self _handleSetTargetIp:call result:result];
   } else if ([@"disconnect" isEqualToString:call.method]) {
     [self _handleDisconnect:call result:result];
+  } else if ([@"startLiveView" isEqualToString:call.method]) {
+    [self _handleStartLiveView:call result:result];
   } else if ([@"batteryLevel" isEqualToString:call.method]) {
     [self _handleBatteryLevel:call result:result];
   } else if ([@"getStorageInfo" isEqualToString:call.method]) {
@@ -58,6 +60,10 @@
   [_httpConnection close:^{
     result(nil);
   }];
+}
+
+- (void)_handleStartLiveView:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_pictureController startLiveView];
 }
 
 - (void)_handleGetImageInfoes:(FlutterMethodCall*)call result:(FlutterResult)result {

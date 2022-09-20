@@ -28,6 +28,24 @@
   }
 }
 
+- (void)startLiveView {
+  [_httpConnection startLiveView:^(NSData *frameData) {
+    // TODO: Send to surface ???
+  }];
+}
+
+- (void)resumeLiveView {
+  [_httpConnection resumeLiveView];
+}
+
+- (void)pauseLiveView {
+  [_httpConnection pauseLiveView];
+}
+
+- (void)stopLiveView {
+  [_httpConnection stopLiveView];
+}
+
 # pragma mark - Setters -
 
 - (void)setHttpConnection:(HttpConnection * _Nonnull)httpConnection {
