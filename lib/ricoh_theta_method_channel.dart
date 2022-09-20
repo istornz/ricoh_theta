@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:ricoh_theta/models/device_info.dart';
@@ -9,6 +11,10 @@ import 'ricoh_theta_platform_interface.dart';
 class MethodChannelRicohTheta extends RicohThetaPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('ricoh_theta');
+
+  @visibleForTesting
+  static const EventChannel livePreviewChannel =
+      EventChannel('ricoh_theta/preview');
 
   @override
   Future setTargetIp(String? ipAddress) async {
@@ -28,6 +34,11 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   }
 
   @override
+  Future startLiveView() {
+    return methodChannel.invokeMethod<String>('startLiveView');
+  }
+
+  @override
   Future<StorageInfo?> getStorageInfo() async {
     final data =
         await methodChannel.invokeMapMethod<String, num>('getStorageInfo');
@@ -36,16 +47,12 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
 
   @override
   Future<List<ImageInfoes>> getImageInfoes() async {
-    final data = await methodChannel
-        .invokeMethod<List>('getImageInfoes');
+    final data = await methodChannel.invokeMethod<List>('getImageInfoes');
     if (data == null) {
       return [];
     }
 
     final map = data.map((imageData) => Map<String, dynamic>.from(imageData));
-
-    print(map);
-
     return map.map((image) => ImageInfoes.fromMap(image)).toList();
   }
 
@@ -59,5 +66,13 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   @override
   Future<String?> takePicture() {
     return methodChannel.invokeMethod<String>('takePicture');
+  }
+
+  Stream<Uint8List>? listenCameraImages() {
+    return livePreviewChannel.receiveBroadcastStream().transform(
+        StreamTransformer<dynamic, Uint8List>.fromHandlers(
+            handleData: (data, sink) {
+      sink.add(data);
+    }));
   }
 }

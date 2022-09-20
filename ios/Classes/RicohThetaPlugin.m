@@ -4,32 +4,34 @@
 #import "StorageController.h"
 #import "Constants.h"
 
-@implementation RicohThetaPlugin {
-  HttpConnection *_httpConnection;
-  PictureController *_pictureController;
-  StorageController *_storageController;
-}
+FlutterEventSink livePreviewStreamEventSink;
+PictureController *pictureController;
+HttpConnection *httpConnection;
+StorageController *storageController;
 
--(id)init {
-    if ( self = [super init] ) {
-      _httpConnection = [[HttpConnection alloc] init];
-      _pictureController = [[PictureController alloc] init];
-      _storageController = [[StorageController alloc] init];
-    }
-    return self;
-}
+@implementation RicohThetaPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"ricoh_theta"
-            binaryMessenger:[registrar messenger]];
+                                   methodChannelWithName:@"ricoh_theta"
+                                   binaryMessenger:[registrar messenger]];
+  
+  LivePreviewStreamHandler *livePreviewStreamHandler =
+  [[LivePreviewStreamHandler alloc] init];
+  FlutterEventChannel *livePreviewChannel = [FlutterEventChannel eventChannelWithName:@"ricoh_theta/preview"
+                                                                      binaryMessenger:[registrar messenger]];
+  [livePreviewChannel setStreamHandler:livePreviewStreamHandler];
+  
   RicohThetaPlugin* instance = [[RicohThetaPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
+  
+  httpConnection = [[HttpConnection alloc] init];
+  pictureController = [[PictureController alloc] init];
+  storageController = [[StorageController alloc] init];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_pictureController setResult:result];
-  [_storageController setResult:result];
+  [self bindResultToControllers:result];
   
   if ([@"setTargetIp" isEqualToString:call.method]) {
     [self _handleSetTargetIp:call result:result];
@@ -53,29 +55,29 @@
 }
 
 - (void)_handleBatteryLevel:(FlutterMethodCall*)call result:(FlutterResult)result {
-  result([_httpConnection getBatteryLevel]);
+  result([httpConnection getBatteryLevel]);
 }
 
 - (void)_handleDisconnect:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_httpConnection close:^{
+  [httpConnection close:^{
     result(nil);
   }];
 }
 
 - (void)_handleStartLiveView:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_pictureController startLiveView];
+  [pictureController startLiveView];
 }
 
 - (void)_handleGetImageInfoes:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_storageController getImageInfoes];
+  [storageController getImageInfoes];
 }
 
 - (void)_handleTakePicture:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_pictureController takePicture];
+  [pictureController takePicture];
 }
 
 - (void)_handleStorageInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_storageController getStorageInfo];
+  [storageController getStorageInfo];
 }
 
 - (void)_handleSetTargetIp:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -85,25 +87,49 @@
     result([FlutterError errorWithCode:@"MISSING_IP_ADDRESS" message:@"ip address need to be specified" details:nil]);
   }
   
-  [_httpConnection setTargetIp:ipAddress];
-  [_pictureController setHttpConnection:_httpConnection];
-  [_storageController setHttpConnection:_httpConnection];
+  [httpConnection setTargetIp:ipAddress];
+  [self bindHttpConnectionToControllers];
   result(nil);
 }
 
-- (void)_handleDeviceInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
-    [_httpConnection getDeviceInfo:^(const HttpDeviceInfo *info) {
-      if (!info) {
-        result([FlutterError errorWithCode:@"INFO_ERROR" message:@"unable to retrieve device info" details:nil]);
-        return;
-      }
-      
-      result(@{
-        @"model": info.model,
-        @"firmwareVersion": info.firmware_version,
-        @"serialNumber": info.serial_number
-      });
-    }];
+- (void)bindResultToControllers:(FlutterResult)result {
+  [pictureController setResult:result];
+  [storageController setResult:result];
 }
 
+- (void)bindHttpConnectionToControllers {
+  [pictureController setHttpConnection:httpConnection];
+  [storageController setHttpConnection:httpConnection];
+}
+
+- (void)_handleDeviceInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [httpConnection getDeviceInfo:^(const HttpDeviceInfo *info) {
+    if (!info) {
+      result([FlutterError errorWithCode:@"INFO_ERROR" message:@"unable to retrieve device info" details:nil]);
+      return;
+    }
+    
+    result(@{
+      @"model": info.model,
+      @"firmwareVersion": info.firmware_version,
+      @"serialNumber": info.serial_number
+    });
+  }];
+}
+
+@end
+
+
+@implementation LivePreviewStreamHandler
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+  livePreviewStreamEventSink = eventSink;
+  [pictureController setLivePreviewEventSink:eventSink];
+  return nil;
+}
+
+- (FlutterError*)onCancelWithArguments:(id)arguments {
+  livePreviewStreamEventSink = nil;
+  [pictureController setLivePreviewEventSink:livePreviewStreamEventSink];
+  return nil;
+}
 @end

@@ -1,4 +1,6 @@
 
+import 'dart:typed_data';
+
 import 'package:ricoh_theta/models/device_info.dart';
 import 'package:ricoh_theta/models/image_infoes.dart';
 import 'package:ricoh_theta/models/storage_info.dart';
@@ -15,6 +17,10 @@ class RicohTheta {
   /// Disconnect from the device
   Future disconnect() async {
     return RicohThetaPlatform.instance.disconnect();
+  }
+
+  Future startLiveView() {
+    return RicohThetaPlatform.instance.startLiveView();
   }
 
   /// Get battery level from device
@@ -41,5 +47,9 @@ class RicohTheta {
   /// Take a picture & return a thumbnail path.
   Future<String?> takePicture() {
     return RicohThetaPlatform.instance.takePicture();
+  }
+
+  Stream<Uint8List>? listenCameraImages() {
+    return RicohThetaPlatform.instance.listenCameraImages();
   }
 }

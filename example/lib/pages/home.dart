@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:ricoh_theta/models/image_infoes.dart';
@@ -17,6 +18,11 @@ class _HomePageState extends State<HomePage> {
   List<ImageInfoes> _imageInfoes = [];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +39,31 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Flexible(
-            child: Container(color: Colors.red),
+            child: Container(
+              // color: Colors.red,
+              child: Stack(
+                children: [
+                  StreamBuilder<Uint8List>(
+                      stream: _ricohThetaPlugin.listenCameraImages(),
+                      builder: (context, snapshot) {
+                        if (snapshot.data != null) {
+                          return Image.memory(snapshot.data!);
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      }),
+                  Center(
+                      child: ElevatedButton(
+                    onPressed: () {
+                      _ricohThetaPlugin.startLiveView();
+                    },
+                    child: Text('Start Live'),
+                  )),
+                ],
+              ),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

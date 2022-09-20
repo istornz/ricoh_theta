@@ -23,14 +23,17 @@
   NSString *tmpFile = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_ricoh_thetha_preview.jpg", uuid]];
   bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:tmpFile atomically:YES];
   if (!success) {
-      _result([FlutterError errorWithCode:@"WRITE_FAILED" message:@"unable to write file" details:nil]);
-      return;
+    _result([FlutterError errorWithCode:@"WRITE_FAILED" message:@"unable to write file" details:nil]);
+    return;
   }
 }
 
 - (void)startLiveView {
   [_httpConnection startLiveView:^(NSData *frameData) {
     // TODO: Send to surface ???
+    if (self->_livePreviewEventSink) {
+      self->_livePreviewEventSink(frameData);
+    }
   }];
 }
 
@@ -54,6 +57,10 @@
 
 - (void)setResult:(FlutterResult _Nonnull)result {
   _result = result;
+}
+
+- (void)setLivePreviewEventSink:(FlutterEventSink _Nonnull)livePreviewEventSink {
+  _livePreviewEventSink = livePreviewEventSink;
 }
 
 @end

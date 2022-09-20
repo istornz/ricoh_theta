@@ -15,10 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(readonly, nonatomic) FlutterResult result;
 @property(readonly, nonatomic) HttpConnection *httpConnection;
+@property(nonatomic) FlutterEventSink livePreviewEventSink;
 
 - (void)takePicture;
 - (void)startLiveView;
 - (void)setResult:(FlutterResult _Nonnull)result;
+- (void)setLivePreviewEventSink:(FlutterEventSink)imageStreamEventSink;
 - (void)setHttpConnection:(HttpConnection * _Nonnull)httpConnection;
 
 @end
