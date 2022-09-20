@@ -1,14 +1,17 @@
 #import "RicohThetaPlugin.h"
 #import "HttpConnection.h"
+#import "PictureController.h"
 #import "Constants.h"
 
 @implementation RicohThetaPlugin {
   HttpConnection *_httpConnection;
+  PictureController *_pictureController;
 }
 
 -(id)init {
     if ( self = [super init] ) {
       _httpConnection = [[HttpConnection alloc] init];
+      _pictureController = [[PictureController alloc] init];
     }
     return self;
 }
@@ -22,6 +25,8 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_pictureController setResult:result];
+  
   if ([@"setTargetIp" isEqualToString:call.method]) {
     [self _handleSetTargetIp:call result:result];
   } else if ([@"disconnect" isEqualToString:call.method]) {
@@ -48,24 +53,7 @@
 }
 
 - (void)_handleTakePicture:(FlutterMethodCall*)call result:(FlutterResult)result {
-  HttpImageInfo *info = [_httpConnection takePicture];
-  
-  if (!info) {
-    result([FlutterError errorWithCode:@"PICTURE_TAKE_ERROR" message:@"unable to take picture" details:nil]);
-  }
-  
-  NSData *thumbData = [_httpConnection getThumb:info.file_id];
-  UIImage *image = [UIImage imageWithData:thumbData];
-  
-  NSString *uuid = [[NSUUID UUID] UUIDString];
-  NSString *tmpFile = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_ricoh_thetha_preview.jpg", uuid]];
-  bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:tmpFile atomically:YES];
-  if (!success) {
-      result([FlutterError errorWithCode:@"IOError" message:@"unable to write file" details:nil]);
-      return;
-  }
-  
-  result(tmpFile);
+  [_pictureController takePicture];
 }
 
 - (void)_handleSetTargetIp:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -76,6 +64,7 @@
   }
   
   [_httpConnection setTargetIp:ipAddress];
+  [_pictureController setHttpConnection:_httpConnection];
   result(nil);
 }
 
