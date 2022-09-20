@@ -29,11 +29,11 @@
   NSArray *imageInfoes = [_httpConnection getImageInfoes];
   
   NSUInteger maxCount = MIN(imageInfoes.count, 30);
-  NSMutableArray *result = [NSMutableArray alloc];
+  NSMutableArray *resultImage = [NSMutableArray new];
   for (NSUInteger i = 0; i < maxCount; ++i) {
     HttpImageInfo *info = [imageInfoes objectAtIndex:i];
     
-    [result addObject:@{
+    [resultImage addObject:@{
       @"fileFormat":  [self formatTypeToString:info.file_format],
       @"fileSize": @(info.file_size),
       @"imagePixWidth": @(info.image_pix_width),
@@ -43,6 +43,8 @@
       @"fileId": info.file_id,
     }];
   }
+  
+  _result(resultImage);
 }
 
 - (NSString *)formatTypeToString:(NSInteger)formatType {

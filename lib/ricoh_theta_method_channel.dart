@@ -37,11 +37,16 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   @override
   Future<List<ImageInfoes>> getImageInfoes() async {
     final data = await methodChannel
-        .invokeMethod<List<Map<String, dynamic>>>('getImageInfoes');
+        .invokeMethod<List>('getImageInfoes');
+    if (data == null) {
+      return [];
+    }
 
-    return data != null
-        ? data.map((image) => ImageInfoes.fromMap(image)).toList()
-        : [];
+    final map = data.map((imageData) => Map<String, dynamic>.from(imageData));
+
+    print(map);
+
+    return map.map((image) => ImageInfoes.fromMap(image)).toList();
   }
 
   @override
