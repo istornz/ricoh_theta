@@ -40,6 +40,28 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final storageInfo = await _ricohThetaPlugin.getStorageInfo();
+              if (storageInfo == null) {
+                return;
+              }
+              showResultDialog(
+                context,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Max capacity: ${storageInfo.maxCapacity}'),
+                    Text('Free space (bytes): ${storageInfo.freeSpaceInBytes}'),
+                    Text('Free space (images): ${storageInfo.freeSpaceInImages}'),
+                    Text('Image height: ${storageInfo.imageHeight}'),
+                    Text('Image width: ${storageInfo.imageWidth}'),
+                  ],
+                ),
+              );
+            },
+            child: const Text('Get storage info'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
               final batteryLevel = await _ricohThetaPlugin.batteryLevel();
               if (batteryLevel == null) {
                 return;

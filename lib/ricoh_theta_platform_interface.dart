@@ -1,5 +1,7 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:ricoh_theta/models/device_info.dart';
+import 'package:ricoh_theta/models/image_infoes.dart';
+import 'package:ricoh_theta/models/storage_info.dart';
 
 import 'ricoh_theta_method_channel.dart';
 
@@ -31,6 +33,14 @@ abstract class RicohThetaPlatform extends PlatformInterface {
 
   Future<DeviceInfo?> getDeviceInfo() {
     throw UnimplementedError('getDeviceInfo() has not been implemented.');
+  }
+
+  Future<StorageInfo?> getStorageInfo() {
+    throw UnimplementedError('getStorageInfo() has not been implemented.');
+  }
+
+  Future<List<ImageInfoes>> getImageInfoes() {
+    throw UnimplementedError('getImageInfoes() has not been implemented.');
   }
 
   Future<String?> takePicture() {

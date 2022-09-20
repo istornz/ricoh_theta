@@ -1,17 +1,20 @@
 #import "RicohThetaPlugin.h"
 #import "HttpConnection.h"
 #import "PictureController.h"
+#import "StorageController.h"
 #import "Constants.h"
 
 @implementation RicohThetaPlugin {
   HttpConnection *_httpConnection;
   PictureController *_pictureController;
+  StorageController *_storageController;
 }
 
 -(id)init {
     if ( self = [super init] ) {
       _httpConnection = [[HttpConnection alloc] init];
       _pictureController = [[PictureController alloc] init];
+      _storageController = [[StorageController alloc] init];
     }
     return self;
 }
@@ -26,6 +29,7 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_pictureController setResult:result];
+  [_storageController setResult:result];
   
   if ([@"setTargetIp" isEqualToString:call.method]) {
     [self _handleSetTargetIp:call result:result];
@@ -33,6 +37,10 @@
     [self _handleDisconnect:call result:result];
   } else if ([@"batteryLevel" isEqualToString:call.method]) {
     [self _handleBatteryLevel:call result:result];
+  } else if ([@"getStorageInfo" isEqualToString:call.method]) {
+    [self _handleStorageInfo:call result:result];
+  } else if ([@"getImageInfoes" isEqualToString:call.method]) {
+    [self _handleGetImageInfoes:call result:result];
   } else if ([@"getDeviceInfo" isEqualToString:call.method]) {
     [self _handleDeviceInfo:call result:result];
   } else if ([@"takePicture" isEqualToString:call.method]) {
@@ -52,8 +60,16 @@
   }];
 }
 
+- (void)_handleGetImageInfoes:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_storageController getImageInfoes];
+}
+
 - (void)_handleTakePicture:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_pictureController takePicture];
+}
+
+- (void)_handleStorageInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [_storageController getStorageInfo];
 }
 
 - (void)_handleSetTargetIp:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -65,6 +81,7 @@
   
   [_httpConnection setTargetIp:ipAddress];
   [_pictureController setHttpConnection:_httpConnection];
+  [_storageController setHttpConnection:_httpConnection];
   result(nil);
 }
 

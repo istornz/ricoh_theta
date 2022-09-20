@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:ricoh_theta/models/image_infoes.dart';
 import 'package:ricoh_theta/ricoh_theta.dart';
 import 'package:ricoh_theta_example/utils.dart';
 
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _ricohThetaPlugin = RicohTheta();
+  List<ImageInfoes> _imageInfoes = [];
 
   @override
   Widget build(BuildContext context) {
@@ -30,29 +32,56 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () async {
-              final picturePath = await _ricohThetaPlugin.takePicture();
-              if (picturePath == null) {
-                return;
-              }
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  final picturePath = await _ricohThetaPlugin.takePicture();
+                  if (picturePath == null) {
+                    return;
+                  }
 
-              showResultDialog(
-                context,
-                child: Image.file(
-                  File(picturePath),
-                ),
-              );
-            },
-            child: const Text('Take picture'),
+                  showResultDialog(
+                    context,
+                    child: Image.file(
+                      File(picturePath),
+                    ),
+                  );
+                },
+                child: const Text('Take picture'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  getImages();
+                },
+                child: const Text('Refresh files'),
+              ),
+            ],
           ),
           Expanded(
-            child: ListView(
-              children: [],
+            child: ListView.builder(
+              itemCount: _imageInfoes.length,
+              itemBuilder: (context, index) {
+                final ImageInfoes imageInfoes = _imageInfoes[index];
+                return ListTile(
+                  title: Text(imageInfoes.fileName),
+                  subtitle: Text(
+                    '${imageInfoes.imagePixWidth} * ${imageInfoes.imagePixHeight}',
+                  ),
+                );
+              },
             ),
           ),
         ],
       ),
     );
+  }
+
+  getImages() async {
+    final images = await _ricohThetaPlugin.getImageInfoes();
+
+    setState(() {
+      _imageInfoes = images;
+    });
   }
 }

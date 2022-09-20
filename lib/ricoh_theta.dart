@@ -1,5 +1,7 @@
 
 import 'package:ricoh_theta/models/device_info.dart';
+import 'package:ricoh_theta/models/image_infoes.dart';
+import 'package:ricoh_theta/models/storage_info.dart';
 
 import 'ricoh_theta_platform_interface.dart';
 
@@ -16,13 +18,24 @@ class RicohTheta {
   }
 
   /// Get battery level from device
-  Future<num?> batteryLevel() async {
-    return RicohThetaPlatform.instance.batteryLevel();
+  Future<num> batteryLevel() async {
+    final battery = await RicohThetaPlatform.instance.batteryLevel();
+    return (battery ?? 0) * 100;
   }
 
   /// Returns the current model information like model, firmware & serial number.
   Future<DeviceInfo?> getDeviceInfo() {
     return RicohThetaPlatform.instance.getDeviceInfo();
+  }
+
+  /// Returns information about the device storage.
+  Future<StorageInfo?> getStorageInfo() {
+    return RicohThetaPlatform.instance.getStorageInfo();
+  }
+
+  /// Returns information about the images stored on the device.
+  Future<List<ImageInfoes>> getImageInfoes() {
+    return RicohThetaPlatform.instance.getImageInfoes();
   }
 
   /// Take a picture & return a thumbnail path.
