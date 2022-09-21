@@ -26,6 +26,10 @@ abstract class RicohThetaPlatform extends PlatformInterface {
     throw UnimplementedError('disconnect() has not been implemented.');
   }
 
+  Future update() {
+    throw UnimplementedError('update() has not been implemented.');
+  }
+
   Future startLiveView(num fps) {
     throw UnimplementedError('startLiveView() has not been implemented.');
   }

@@ -35,7 +35,9 @@ class _ImageViewPageState extends State<ImageViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Image preview'),
+      ),
       body: SizedBox.expand(
         child: StreamBuilder(
           stream: _ricohThetaPlugin.listenDownloadProgress(),

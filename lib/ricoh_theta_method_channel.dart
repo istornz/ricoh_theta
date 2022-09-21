@@ -34,6 +34,11 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   }
 
   @override
+  Future update() {
+    return methodChannel.invokeMethod('update');
+  }
+
+  @override
   Future<num?> batteryLevel() {
     return methodChannel.invokeMethod<num>('batteryLevel');
   }

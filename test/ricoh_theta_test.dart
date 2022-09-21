@@ -100,6 +100,9 @@ class MockRicohThetaPlatform
 
   @override
   Stream<num>? listenDownloadProgress() => _downloadController.stream;
+  
+  @override
+  Future update() => Future.value();
 }
 
 void main() {
@@ -176,5 +179,9 @@ void main() {
 
   test('getImage', () async {
     expect(await ricohThetaPlugin.getImage('FILE_ID1'), isNotNull);
+  });
+
+  test('update', () async {
+    expect(await ricohThetaPlugin.update(), null);
   });
 }

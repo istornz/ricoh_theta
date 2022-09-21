@@ -19,10 +19,9 @@ class _RicohThetaAppState extends State<RicohThetaApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/connect',
       onGenerateRoute: (settings) {
         switch (settings.name) {
-          case '/connect':
+          case '/':
             return MaterialPageRoute(
               builder: (context) => const ConnectPage(),
             );

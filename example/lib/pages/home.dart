@@ -131,12 +131,14 @@ class _HomePageState extends State<HomePage> {
                         return;
                       }
 
-                      showResultDialog(
+                      await showResultDialog(
                         context,
                         child: Image.file(
                           File(picturePath),
                         ),
                       );
+
+                      getImages();
                     },
                     child: const Text('Take picture'),
                   ),

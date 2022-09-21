@@ -69,9 +69,16 @@ StorageController *storageController;
     [self _handleDeviceInfo:call result:result];
   } else if ([@"takePicture" isEqualToString:call.method]) {
     [self _handleTakePicture:call result:result];
+  } else if ([@"update" isEqualToString:call.method]) {
+    [self _handleUpdate:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)_handleUpdate:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [httpConnection update];
+  result(nil);
 }
 
 - (void)_handleBatteryLevel:(FlutterMethodCall*)call result:(FlutterResult)result {

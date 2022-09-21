@@ -47,6 +47,8 @@ void main() {
         return null;
       } else if (methodCall.method == 'stopLiveView') {
         return null;
+      } else if (methodCall.method == 'update') {
+        return null;
       } else if (methodCall.method == 'removeImageWithFileId') {
         return true;
       } else if (methodCall.method == 'getImage') {
@@ -120,5 +122,9 @@ void main() {
 
   test('getImage', () async {
     expect(await platform.getImage('FILE_ID1'), isNotNull);
+  });
+
+  test('update', () async {
+    expect(await platform.update(), null);
   });
 }

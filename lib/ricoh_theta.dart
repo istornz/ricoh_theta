@@ -66,6 +66,12 @@ class RicohTheta {
     return RicohThetaPlatform.instance.getStorageInfo();
   }
 
+  /// Update device session.
+  /// Can be used to keep a session alive.
+  Future update() {
+    return RicohThetaPlatform.instance.update();
+  }
+
   /// Returns information about the images stored on the device.
   Future<List<ImageInfoes>> getImageInfoes() {
     return RicohThetaPlatform.instance.getImageInfoes();
