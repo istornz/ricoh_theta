@@ -47,11 +47,9 @@ class _HomePageState extends State<HomePage> {
                       stream: _ricohThetaPlugin.listenCameraImages(),
                       builder: (context, snapshot) {
                         if (snapshot.data != null) {
-                          return Image.memory(snapshot.data!);
+                          return Image.memory(snapshot.data!, gaplessPlayback: true);
                         } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return Container();
                         }
                       }),
                   Center(
@@ -59,7 +57,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       _ricohThetaPlugin.startLiveView();
                     },
-                    child: Text('Start Live'),
+                    child: const Text('Start Live'),
                   )),
                 ],
               ),

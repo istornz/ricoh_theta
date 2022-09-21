@@ -9,6 +9,13 @@
 
 @implementation PictureController
 
+-(id)init {
+  if ( self = [super init] ) {
+    _frameCount = 0;
+  }
+  return self;
+}
+
 - (void)takePicture {
   HttpImageInfo *info = [_httpConnection takePicture];
   
@@ -31,9 +38,14 @@
 - (void)startLiveView {
   [_httpConnection startLiveView:^(NSData *frameData) {
     // TODO: Send to surface ???
-    if (self->_livePreviewEventSink) {
-      self->_livePreviewEventSink(frameData);
-    }
+    
+    // self->_frameCount++;
+    // if (self->_livePreviewEventSink && self->_frameCount >= 15) {
+    //   self->_livePreviewEventSink(frameData);
+    //   self->_frameCount = 0;
+    // }
+
+    self->_livePreviewEventSink(frameData);
   }];
 }
 

@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly, nonatomic) FlutterResult result;
 @property(readonly, nonatomic) HttpConnection *httpConnection;
 @property(nonatomic) FlutterEventSink livePreviewEventSink;
+@property(nonatomic) int frameCount;
 
 - (void)takePicture;
 - (void)startLiveView;
