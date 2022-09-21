@@ -68,7 +68,8 @@ abstract class RicohThetaPlatform extends PlatformInterface {
   }
 
   Stream<num>? listenDownloadProgress() {
-    throw UnimplementedError('listenDownloadProgress() has not been implemented.');
+    throw UnimplementedError(
+        'listenDownloadProgress() has not been implemented.');
   }
 
   Future<List<ImageInfoes>> getImageInfoes() {

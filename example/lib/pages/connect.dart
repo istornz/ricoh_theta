@@ -36,8 +36,7 @@ class _ConnectPageState extends State<ConnectPage> {
                 if (_formKey.currentState!.validate()) {
                   await _ricohThetaPlugin
                       .setTargetIp(_ipAddressTextController.text);
-                  await _ricohThetaPlugin.getDeviceInfo()
-                      .then((value) {
+                  await _ricohThetaPlugin.getDeviceInfo().then((value) {
                     Navigator.pushReplacementNamed(context, '/home');
                   }).catchError((error) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

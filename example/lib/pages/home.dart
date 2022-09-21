@@ -161,9 +161,10 @@ class _HomePageState extends State<HomePage> {
                     '${imageInfoes.imagePixWidth} * ${imageInfoes.imagePixHeight}',
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, '/home/image-view', arguments: {
-                      'fileId': imageInfoes.fileId,
-                    });
+                    Navigator.pushNamed(context, '/home/image-view',
+                        arguments: {
+                          'fileId': imageInfoes.fileId,
+                        });
                   },
                 );
               },

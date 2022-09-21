@@ -51,7 +51,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     Text('Max capacity: ${storageInfo.maxCapacity}'),
                     Text('Free space (bytes): ${storageInfo.freeSpaceInBytes}'),
-                    Text('Free space (images): ${storageInfo.freeSpaceInImages}'),
+                    Text(
+                        'Free space (images): ${storageInfo.freeSpaceInImages}'),
                     Text('Image height: ${storageInfo.imageHeight}'),
                     Text('Image width: ${storageInfo.imageWidth}'),
                   ],
@@ -63,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ElevatedButton(
             onPressed: () async {
               final batteryLevel = await _ricohThetaPlugin.batteryLevel();
-              
+
               showResultDialog(
                 context,
                 child: Text('Battery: $batteryLevel %'),

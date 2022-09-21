@@ -16,7 +16,7 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   @visibleForTesting
   static const EventChannel livePreviewChannel =
       EventChannel('ricoh_theta/preview');
-  
+
   @visibleForTesting
   static const EventChannel downloadChannel =
       EventChannel('ricoh_theta/download');
@@ -87,8 +87,7 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   @override
   Stream<num>? listenDownloadProgress() {
     return downloadChannel.receiveBroadcastStream().transform(
-        StreamTransformer<dynamic, num>.fromHandlers(
-            handleData: (data, sink) {
+        StreamTransformer<dynamic, num>.fromHandlers(handleData: (data, sink) {
       sink.add(data);
     }));
   }

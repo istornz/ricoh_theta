@@ -13,8 +13,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 final StreamController<Uint8List> _livePreviewController =
     StreamController.broadcast();
-final StreamController<num> _downloadController =
-    StreamController.broadcast();
+final StreamController<num> _downloadController = StreamController.broadcast();
 
 class MockRicohThetaPlatform
     with MockPlatformInterfaceMixin
@@ -92,7 +91,7 @@ class MockRicohThetaPlatform
 
   @override
   Future stopLiveView() => Future.value();
-  
+
   @override
   Future<bool?> removeImageWithFileId(String fileId) => Future.value(true);
 

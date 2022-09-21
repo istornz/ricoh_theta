@@ -33,7 +33,9 @@ class _RicohThetaAppState extends State<RicohThetaApp> {
           case '/home/image-view':
             final args = (settings.arguments as Map<String, String>);
             return MaterialPageRoute(
-              builder: (context) => ImageViewPage(fileId: args['fileId']!,),
+              builder: (context) => ImageViewPage(
+                fileId: args['fileId']!,
+              ),
             );
           case '/settings':
             return MaterialPageRoute(

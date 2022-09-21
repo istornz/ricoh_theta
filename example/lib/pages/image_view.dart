@@ -57,9 +57,9 @@ class _ImageViewPageState extends State<ImageViewPage> {
                       ),
                     )
                   : InteractiveViewer(
-                    maxScale: 20,
-                    child: Image.file(_image!),
-                  );
+                      maxScale: 20,
+                      child: Image.file(_image!),
+                    );
             } else {
               return const Center(child: CircularProgressIndicator());
             }

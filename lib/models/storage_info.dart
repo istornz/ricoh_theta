@@ -21,5 +21,5 @@ class StorageInfo {
       imageWidth: map['imageWidth'] ?? -1,
       imageHeight: map['imageHeight'] ?? -1,
     );
-  }  
+  }
 }
