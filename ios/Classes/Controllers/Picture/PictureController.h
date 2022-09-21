@@ -19,7 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) int frameCount;
 
 - (void)takePicture;
-- (void)startLiveView;
+- (void)startLiveView:(float)fps;
+- (void)resumeLiveView;
+- (void)pauseLiveView;
+- (void)stopLiveView;
+- (void)adjustLiveViewFps:(float)fps;
 - (void)setResult:(FlutterResult _Nonnull)result;
 - (void)setLivePreviewEventSink:(FlutterEventSink)imageStreamEventSink;
 - (void)setHttpConnection:(HttpConnection * _Nonnull)httpConnection;

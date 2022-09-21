@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ricoh_theta_example/pages/connect.dart';
 import 'package:ricoh_theta_example/pages/home.dart';
+import 'package:ricoh_theta_example/pages/image_view.dart';
 import 'package:ricoh_theta_example/pages/settings.dart';
 
 void main() {
@@ -19,10 +20,30 @@ class _RicohThetaAppState extends State<RicohThetaApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/connect',
-      routes: {
-        '/connect': (context) => const ConnectPage(),
-        '/home': (context) => const HomePage(),
-        '/settings': (context) => const SettingsPage(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/connect':
+            return MaterialPageRoute(
+              builder: (context) => const ConnectPage(),
+            );
+          case '/home':
+            return MaterialPageRoute(
+              builder: (context) => const HomePage(),
+            );
+          case '/home/image-view':
+            final args = (settings.arguments as Map<String, String>);
+            return MaterialPageRoute(
+              builder: (context) => ImageViewPage(fileId: args['fileId']!,),
+            );
+          case '/settings':
+            return MaterialPageRoute(
+              builder: (context) => const SettingsPage(),
+            );
+          default:
+            return MaterialPageRoute(
+              builder: (context) => const ConnectPage(),
+            );
+        }
       },
     );
   }

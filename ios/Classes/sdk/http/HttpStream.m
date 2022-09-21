@@ -20,6 +20,7 @@ const Byte EOI_MARKER[] = {0xFF, 0xD9};
   void (^_onBuffered)(NSData *frameData);
   BOOL _isContinue;
   NSDate *_latestEmittedFrame;
+  float _fps;
 }
 @end
 
@@ -74,6 +75,10 @@ const Byte EOI_MARKER[] = {0xFF, 0xD9};
   }
 }
 
+- (void)adjustLiveViewFps:(float)fps {
+  _fps = fps;
+}
+
 /**
  * Stop data acquisition task
  */
@@ -95,8 +100,10 @@ const Byte EOI_MARKER[] = {0xFF, 0xD9};
   NSDate *nowDate = [NSDate date];
   NSTimeInterval secondsBetween = [nowDate timeIntervalSinceDate:_latestEmittedFrame];
   
-  if (secondsBetween <= 0.5) {
-    return;
+  if (_fps && _fps > 0) {
+    if (secondsBetween <= (1 / _fps)) {
+      return;
+    }
   }
   
   [_buffer appendData:data];

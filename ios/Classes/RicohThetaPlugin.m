@@ -5,6 +5,8 @@
 #import "Constants.h"
 
 FlutterEventSink livePreviewStreamEventSink;
+FlutterEventSink downloadStreamEventSink;
+
 PictureController *pictureController;
 HttpConnection *httpConnection;
 StorageController *storageController;
@@ -22,7 +24,13 @@ StorageController *storageController;
                                                                       binaryMessenger:[registrar messenger]];
   [livePreviewChannel setStreamHandler:livePreviewStreamHandler];
   
-  RicohThetaPlugin* instance = [[RicohThetaPlugin alloc] init];
+  DownloadStreamHandler *downloadStreamHandler =
+  [[DownloadStreamHandler alloc] init];
+  FlutterEventChannel *downloadChannel = [FlutterEventChannel eventChannelWithName:@"ricoh_theta/download"
+                                                                   binaryMessenger:[registrar messenger]];
+  [downloadChannel setStreamHandler:downloadStreamHandler];
+  
+  RicohThetaPlugin *instance = [[RicohThetaPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
   
   httpConnection = [[HttpConnection alloc] init];
@@ -39,10 +47,22 @@ StorageController *storageController;
     [self _handleDisconnect:call result:result];
   } else if ([@"startLiveView" isEqualToString:call.method]) {
     [self _handleStartLiveView:call result:result];
+  } else if ([@"resumeLiveView" isEqualToString:call.method]) {
+    [self _handleResumeLiveView:call result:result];
+  } else if ([@"pauseLiveView" isEqualToString:call.method]) {
+    [self _handlePauseLiveView:call result:result];
+  } else if ([@"removeImageWithFileId" isEqualToString:call.method]) {
+    [self _handleRemoveImageWithFileId:call result:result];
+  } else if ([@"stopLiveView" isEqualToString:call.method]) {
+    [self _handleStopLiveView:call result:result];
+  } else if ([@"adjustLiveViewFps" isEqualToString:call.method]) {
+    [self _handleAdjustLiveViewFps:call result:result];
   } else if ([@"batteryLevel" isEqualToString:call.method]) {
     [self _handleBatteryLevel:call result:result];
   } else if ([@"getStorageInfo" isEqualToString:call.method]) {
     [self _handleStorageInfo:call result:result];
+  } else if ([@"getImage" isEqualToString:call.method]) {
+    [self _handleGetImageWithFileId:call result:result];
   } else if ([@"getImageInfoes" isEqualToString:call.method]) {
     [self _handleGetImageInfoes:call result:result];
   } else if ([@"getDeviceInfo" isEqualToString:call.method]) {
@@ -64,12 +84,56 @@ StorageController *storageController;
   }];
 }
 
+- (void)_handleAdjustLiveViewFps:(FlutterMethodCall*)call result:(FlutterResult)result {
+  float fps = [call.arguments[@"fps"] floatValue];
+  
+  if (!fps) {
+    result([FlutterError errorWithCode:@"WRONG_FPS" message:@"fps value invalid must not be null" details:nil]);
+  }
+  
+  [pictureController adjustLiveViewFps:fps];
+}
+
+- (void)_handleRemoveImageWithFileId:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString *fileId = call.arguments[@"fileId"];
+  
+  if (!fileId) {
+    result([FlutterError errorWithCode:@"MISSING_FILE_ID" message:@"file id need to be specified" details:nil]);
+  }
+  
+  [storageController removeImageWithFileId:fileId];
+}
+
+- (void)_handleGetImageWithFileId:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString *fileId = call.arguments[@"fileId"];
+  
+  if (!fileId) {
+    result([FlutterError errorWithCode:@"MISSING_FILE_ID" message:@"file id need to be specified" details:nil]);
+  }
+  
+  [storageController getImageWithFileId:fileId];
+}
+
 - (void)_handleStartLiveView:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [pictureController startLiveView];
+  float fps = [call.arguments[@"fps"] floatValue];
+  
+  [pictureController startLiveView:fps];
 }
 
 - (void)_handleGetImageInfoes:(FlutterMethodCall*)call result:(FlutterResult)result {
   [storageController getImageInfoes];
+}
+
+- (void)_handleResumeLiveView:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [pictureController resumeLiveView];
+}
+
+- (void)_handlePauseLiveView:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [pictureController pauseLiveView];
+}
+
+- (void)_handleStopLiveView:(FlutterMethodCall*)call result:(FlutterResult)result {
+  [pictureController stopLiveView];
 }
 
 - (void)_handleTakePicture:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -130,6 +194,20 @@ StorageController *storageController;
 - (FlutterError*)onCancelWithArguments:(id)arguments {
   livePreviewStreamEventSink = nil;
   [pictureController setLivePreviewEventSink:livePreviewStreamEventSink];
+  return nil;
+}
+@end
+
+@implementation DownloadStreamHandler
+- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+  downloadStreamEventSink = eventSink;
+  [storageController setDownloadEventSink:eventSink];
+  return nil;
+}
+
+- (FlutterError*)onCancelWithArguments:(id)arguments {
+  downloadStreamEventSink = nil;
+  [storageController setDownloadEventSink:downloadStreamEventSink];
   return nil;
 }
 @end

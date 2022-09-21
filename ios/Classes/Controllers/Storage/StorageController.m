@@ -25,6 +25,46 @@
   });
 }
 
+- (void)removeImageWithFileId:(NSString *) fileId {
+  _result(@([_httpConnection deleteImage:fileId]));
+}
+
+- (void)getImageWithFileId:(NSString *)fileId {
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+  NSString *file = [NSString stringWithFormat:@"%@", fileId];
+  NSURL *url = [NSURL URLWithString:file];
+  
+  request = [NSMutableURLRequest requestWithURL:url];
+  _httpSession = [[HttpSession alloc] initWithRequest:request];
+  
+  [_httpSession getResizedImageObject:fileId
+                              onStart:^(int64_t totalLength) {
+  }
+                              onWrite:^(int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      float progress = (float)totalBytesWritten / totalBytesExpectedToWrite;
+      
+      if (self->_downloadEventSink) {
+        self->_downloadEventSink(@(progress));
+      }
+    });
+  }
+                             onFinish:^(NSURL *location){
+    NSData *data = [NSMutableData dataWithContentsOfURL:[NSURL URLWithString:fileId]];
+    UIImage *image = [UIImage imageWithData:data];
+    NSString *uuid = [[NSUUID UUID] UUIDString];
+    NSString *tmpFile = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@_ricoh_thetha_image.jpg", uuid]];
+    bool success = [UIImageJPEGRepresentation(image, 1.0) writeToFile:tmpFile atomically:YES];
+    
+    if (!success) {
+      self->_result([FlutterError errorWithCode:@"WRITE_FAILED" message:@"unable to write file" details:nil]);
+      return;
+    }
+    
+    self->_result(tmpFile);
+  }];
+}
+
 - (void)getImageInfoes {
   NSArray *imageInfoes = [_httpConnection getImageInfoes];
   
@@ -48,14 +88,14 @@
 }
 
 - (NSString *)formatTypeToString:(NSInteger)formatType {
-    switch(formatType) {
-        case CODE_JPEG:
-            return @"CODE_JPEG";
-        case CODE_MPEG:
-            return @"CODE_MPEG";
-        default:
-        return @"UNKNOWN";
-    }
+  switch(formatType) {
+    case CODE_JPEG:
+      return @"CODE_JPEG";
+    case CODE_MPEG:
+      return @"CODE_MPEG";
+    default:
+      return @"UNKNOWN";
+  }
 }
 
 # pragma mark - Setters -
@@ -66,6 +106,10 @@
 
 - (void)setResult:(FlutterResult _Nonnull)result {
   _result = result;
+}
+
+- (void)setDownloadEventSink:(FlutterEventSink)downloadEventSink {
+  _downloadEventSink = downloadEventSink;
 }
 
 @end

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:ricoh_theta_example/ricoh_theta_service.dart';
+import 'package:ricoh_theta/ricoh_theta.dart';
 
 class ConnectPage extends StatefulWidget {
   const ConnectPage({super.key});
@@ -10,7 +9,7 @@ class ConnectPage extends StatefulWidget {
 }
 
 class _ConnectPageState extends State<ConnectPage> {
-  final _ricohService = RicohThetaService.instance;
+  final _ricohThetaPlugin = RicohTheta();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _ipAddressTextController =
       TextEditingController(text: '192.168.1.1');
@@ -35,9 +34,9 @@ class _ConnectPageState extends State<ConnectPage> {
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  await _ricohService
-                      .setTargetIp(ipAddress: _ipAddressTextController.text);
-                  await _ricohService.getDeviceInfo()
+                  await _ricohThetaPlugin
+                      .setTargetIp(_ipAddressTextController.text);
+                  await _ricohThetaPlugin.getDeviceInfo()
                       .then((value) {
                     Navigator.pushReplacementNamed(context, '/home');
                   }).catchError((error) {

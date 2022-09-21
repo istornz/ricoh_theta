@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,10 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   @visibleForTesting
   static const EventChannel livePreviewChannel =
       EventChannel('ricoh_theta/preview');
+  
+  @visibleForTesting
+  static const EventChannel downloadChannel =
+      EventChannel('ricoh_theta/download');
 
   @override
   Future setTargetIp(String? ipAddress) async {
@@ -34,8 +39,10 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
   }
 
   @override
-  Future startLiveView() {
-    return methodChannel.invokeMethod<String>('startLiveView');
+  Future startLiveView(num fps) {
+    return methodChannel.invokeMethod<String>('startLiveView', {
+      'fps': fps,
+    });
   }
 
   @override
@@ -68,11 +75,59 @@ class MethodChannelRicohTheta extends RicohThetaPlatform {
     return methodChannel.invokeMethod<String>('takePicture');
   }
 
+  @override
   Stream<Uint8List>? listenCameraImages() {
     return livePreviewChannel.receiveBroadcastStream().transform(
         StreamTransformer<dynamic, Uint8List>.fromHandlers(
             handleData: (data, sink) {
       sink.add(data);
     }));
+  }
+
+  @override
+  Stream<num>? listenDownloadProgress() {
+    return downloadChannel.receiveBroadcastStream().transform(
+        StreamTransformer<dynamic, num>.fromHandlers(
+            handleData: (data, sink) {
+      sink.add(data);
+    }));
+  }
+
+  @override
+  Future adjustLiveViewFps(num fps) {
+    return methodChannel.invokeMethod<String>('adjustLiveViewFps', {
+      'fps': fps,
+    });
+  }
+
+  @override
+  Future pauseLiveView() async {
+    return methodChannel.invokeMethod<String>('pauseLiveView');
+  }
+
+  @override
+  Future stopLiveView() async {
+    return methodChannel.invokeMethod<String>('stopLiveView');
+  }
+
+  @override
+  Future resumeLiveView() async {
+    return methodChannel.invokeMethod<String>('resumeLiveView');
+  }
+
+  @override
+  Future<bool?> removeImageWithFileId(String fileId) async {
+    return methodChannel.invokeMethod<bool>('removeImageWithFileId', {
+      'fileId': fileId,
+    });
+  }
+
+  @override
+  Future<File?> getImage(String fileId) async {
+    final tmpPath = await methodChannel.invokeMethod<String>('getImage', {
+      'fileId': fileId,
+    });
+
+    return tmpPath != null ? File(tmpPath) : null;
   }
 }

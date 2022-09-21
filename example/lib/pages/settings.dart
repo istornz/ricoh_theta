@@ -63,9 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ElevatedButton(
             onPressed: () async {
               final batteryLevel = await _ricohThetaPlugin.batteryLevel();
-              if (batteryLevel == null) {
-                return;
-              }
+              
               showResultDialog(
                 context,
                 child: Text('Battery: $batteryLevel %'),

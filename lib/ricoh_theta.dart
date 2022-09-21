@@ -1,4 +1,5 @@
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ricoh_theta/models/device_info.dart';
@@ -19,8 +20,35 @@ class RicohTheta {
     return RicohThetaPlatform.instance.disconnect();
   }
 
-  Future startLiveView() {
-    return RicohThetaPlatform.instance.startLiveView();
+  /// Start capture of live view
+  Future startLiveView({num fps = 30}) async {
+    return RicohThetaPlatform.instance.startLiveView(fps);
+  }
+
+  /// Remove an image from storage device.
+  /// Return true if the image is removed successfully.
+  Future<bool?> removeImageWithFileId(String fileId) {
+    return RicohThetaPlatform.instance.removeImageWithFileId(fileId);
+  }
+
+  /// Get an image from storage device.
+  Future<File?> getImage(String fileId) {
+    return RicohThetaPlatform.instance.getImage(fileId);
+  }
+
+  /// Pause capture of live view
+  Future pauseLiveView() async {
+    return RicohThetaPlatform.instance.pauseLiveView();
+  }
+
+  /// Pause capture of live view
+  Future stopLiveView() async {
+    return RicohThetaPlatform.instance.stopLiveView();
+  }
+
+  /// Resume capture of live view
+  Future resumeLiveView() async {
+    return RicohThetaPlatform.instance.resumeLiveView();
   }
 
   /// Get battery level from device
@@ -49,7 +77,25 @@ class RicohTheta {
     return RicohThetaPlatform.instance.takePicture();
   }
 
+  /// Listen for live preview images coming from device.
+  /// Don't forget to call [startLiveView] to start streaming.
   Stream<Uint8List>? listenCameraImages() {
     return RicohThetaPlatform.instance.listenCameraImages();
+  }
+
+  /// Listen for download progress of images.
+  /// This stream is triggered when [getImage] is called.
+  Stream<num>? listenDownloadProgress() {
+    return RicohThetaPlatform.instance.listenDownloadProgress();
+  }
+
+  /// Adjust fraps per seconds for image preview.
+  /// This is the number of frame emitted every seconds
+  /// - 1 signifies 1 frame per second
+  /// - 40 signifies 40 frames per second
+  /// [...]
+  /// - 0 signifies unlimited frames
+  Future adjustLiveViewFps(num fps) {
+    return RicohThetaPlatform.instance.adjustLiveViewFps(fps);
   }
 }

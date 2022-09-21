@@ -9,7 +9,7 @@
 
 @implementation PictureController
 
--(id)init {
+- (id)init {
   if ( self = [super init] ) {
     _frameCount = 0;
   }
@@ -33,20 +33,17 @@
     _result([FlutterError errorWithCode:@"WRITE_FAILED" message:@"unable to write file" details:nil]);
     return;
   }
+  _result(tmpFile);
 }
 
-- (void)startLiveView {
-  [_httpConnection startLiveView:^(NSData *frameData) {
-    // TODO: Send to surface ???
-    
-    // self->_frameCount++;
-    // if (self->_livePreviewEventSink && self->_frameCount >= 15) {
-    //   self->_livePreviewEventSink(frameData);
-    //   self->_frameCount = 0;
-    // }
+- (void)adjustLiveViewFps:(float)fps {
+  [_httpConnection adjustLiveViewFps:fps];
+}
 
+- (void)startLiveView:(float)fps {
+  [_httpConnection startLiveView:^(NSData *frameData) {
     self->_livePreviewEventSink(frameData);
-  }];
+  } andFps:fps];
 }
 
 - (void)resumeLiveView {
@@ -71,7 +68,7 @@
   _result = result;
 }
 
-- (void)setLivePreviewEventSink:(FlutterEventSink _Nonnull)livePreviewEventSink {
+- (void)setLivePreviewEventSink:(FlutterEventSink)livePreviewEventSink {
   _livePreviewEventSink = livePreviewEventSink;
 }
 

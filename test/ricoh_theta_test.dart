@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ricoh_theta/models/device_info.dart';
 import 'package:ricoh_theta/models/image_infoes.dart';
@@ -6,6 +10,11 @@ import 'package:ricoh_theta/ricoh_theta.dart';
 import 'package:ricoh_theta/ricoh_theta_platform_interface.dart';
 import 'package:ricoh_theta/ricoh_theta_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+final StreamController<Uint8List> _livePreviewController =
+    StreamController.broadcast();
+final StreamController<num> _downloadController =
+    StreamController.broadcast();
 
 class MockRicohThetaPlatform
     with MockPlatformInterfaceMixin
@@ -29,7 +38,7 @@ class MockRicohThetaPlatform
   Future disconnect() => Future.value();
 
   @override
-  Future<num?> batteryLevel() => Future.value(32.3);
+  Future<num?> batteryLevel() => Future.value(0.32);
 
   @override
   Future<StorageInfo?> getStorageInfo() => Future.value(
@@ -44,9 +53,54 @@ class MockRicohThetaPlatform
 
   @override
   Future<List<ImageInfoes>> getImageInfoes() {
-    // TODO: implement getImageInfoes
-    throw UnimplementedError();
+    return Future.value([
+      ImageInfoes(
+        captureDate: DateTime(2020, 1, 1),
+        fileFormat: FileFormat.CODE_JPEG,
+        fileId: 'FILE1',
+        fileName: 'image1.jpg',
+        fileSize: 2003,
+        imagePixHeight: 1920,
+        imagePixWidth: 1080,
+      ),
+      ImageInfoes(
+        captureDate: DateTime(2022, 2, 1),
+        fileFormat: FileFormat.CODE_MPEG,
+        fileId: 'FILE2',
+        fileName: 'image2.mp4',
+        fileSize: 2004,
+        imagePixHeight: 1922,
+        imagePixWidth: 1082,
+      )
+    ]);
   }
+
+  @override
+  Future adjustLiveViewFps(num fps) => Future.value();
+
+  @override
+  Stream<Uint8List>? listenCameraImages() => _livePreviewController.stream;
+
+  @override
+  Future pauseLiveView() => Future.value();
+
+  @override
+  Future resumeLiveView() => Future.value();
+
+  @override
+  Future startLiveView(num fps) => Future.value();
+
+  @override
+  Future stopLiveView() => Future.value();
+  
+  @override
+  Future<bool?> removeImageWithFileId(String fileId) => Future.value(true);
+
+  @override
+  Future<File?> getImage(String fileId) => Future.value(File('/tmp/image.jpg'));
+
+  @override
+  Stream<num>? listenDownloadProgress() => _downloadController.stream;
 }
 
 void main() {
@@ -59,7 +113,7 @@ void main() {
     expect(initialPlatform, isInstanceOf<MethodChannelRicohTheta>());
   });
 
-  test('getPlatformVersion', () async {
+  test('getDeviceInfo', () async {
     final model = await ricohThetaPlugin.getDeviceInfo();
     expect(model?.model, 'Tetha Model S');
     expect(model?.firmwareVersion, '10.0.0');
@@ -79,6 +133,49 @@ void main() {
   });
 
   test('batteryLevel', () async {
-    expect(await ricohThetaPlugin.batteryLevel(), 32.3);
+    expect(await ricohThetaPlugin.batteryLevel(), 32.0);
+  });
+
+  test('getImageInfoes', () async {
+    final list = await ricohThetaPlugin.getImageInfoes();
+    expect(list.length, 2);
+
+    expect(list.first.fileFormat, FileFormat.CODE_JPEG);
+    expect(list.first.fileId, 'FILE1');
+    expect(list.first.fileName, 'image1.jpg');
+    expect(list.first.fileSize, 2003);
+    expect(list.first.imagePixHeight, 1920);
+    expect(list.first.imagePixWidth, 1080);
+
+    expect(list.last.fileFormat, FileFormat.CODE_MPEG);
+    expect(list.last.fileId, 'FILE2');
+  });
+
+  test('adjustLiveViewFps', () async {
+    expect(await ricohThetaPlugin.adjustLiveViewFps(12), null);
+  });
+
+  test('pauseLiveView', () async {
+    expect(await ricohThetaPlugin.pauseLiveView(), null);
+  });
+
+  test('resumeLiveView', () async {
+    expect(await ricohThetaPlugin.resumeLiveView(), null);
+  });
+
+  test('startLiveView', () async {
+    expect(await ricohThetaPlugin.startLiveView(fps: 23), null);
+  });
+
+  test('stopLiveView', () async {
+    expect(await ricohThetaPlugin.stopLiveView(), null);
+  });
+
+  test('removeImageWithFileId', () async {
+    expect(await ricohThetaPlugin.removeImageWithFileId('file1'), true);
+  });
+
+  test('getImage', () async {
+    expect(await ricohThetaPlugin.getImage('FILE_ID1'), isNotNull);
   });
 }

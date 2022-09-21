@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -25,8 +26,29 @@ abstract class RicohThetaPlatform extends PlatformInterface {
     throw UnimplementedError('disconnect() has not been implemented.');
   }
 
-  Future startLiveView() {
+  Future startLiveView(num fps) {
     throw UnimplementedError('startLiveView() has not been implemented.');
+  }
+
+  Future<bool?> removeImageWithFileId(String fileId) {
+    throw UnimplementedError(
+        'removeImageWithFileId() has not been implemented.');
+  }
+
+  Future<File?> getImage(String fileId) {
+    throw UnimplementedError('getImage() has not been implemented.');
+  }
+
+  Future pauseLiveView() {
+    throw UnimplementedError('pauseLiveView() has not been implemented.');
+  }
+
+  Future stopLiveView() {
+    throw UnimplementedError('stopLiveView() has not been implemented.');
+  }
+
+  Future resumeLiveView() {
+    throw UnimplementedError('resumeLiveView() has not been implemented.');
   }
 
   Future<num?> batteryLevel() {
@@ -45,6 +67,10 @@ abstract class RicohThetaPlatform extends PlatformInterface {
     throw UnimplementedError('getStorageInfo() has not been implemented.');
   }
 
+  Stream<num>? listenDownloadProgress() {
+    throw UnimplementedError('listenDownloadProgress() has not been implemented.');
+  }
+
   Future<List<ImageInfoes>> getImageInfoes() {
     throw UnimplementedError('getImageInfoes() has not been implemented.');
   }
@@ -55,5 +81,9 @@ abstract class RicohThetaPlatform extends PlatformInterface {
 
   Stream<Uint8List>? listenCameraImages() {
     throw UnimplementedError('listenCameraImages() has not been implemented.');
+  }
+
+  Future adjustLiveViewFps(num fps) {
+    throw UnimplementedError('adjustLiveViewFps() has not been implemented.');
   }
 }

@@ -33,9 +33,11 @@
 
 - (void)setImageFormat:(NSUInteger)width height:(NSUInteger)height;
 
-- (void)startLiveView:(void(^ const)(NSData *frameData))block;
+- (void)startLiveView:(void(^ const)(NSData *frameData))block andFps:(float)fps;
 
 - (void)stopLiveView;
+
+- (void)adjustLiveViewFps:(float)fps;
 
 - (void)pauseLiveView;
 
@@ -43,7 +45,7 @@
 
 - (HttpImageInfo*)takePicture;
 
-- (BOOL)deleteImage:(HttpImageInfo*)info;
+- (BOOL)deleteImage:(NSString *)fileId;
 
 - (NSMutableURLRequest*)createExecuteRequest;
 

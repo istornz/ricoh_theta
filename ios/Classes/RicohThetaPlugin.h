@@ -5,3 +5,6 @@
 
 @interface LivePreviewStreamHandler : NSObject <FlutterStreamHandler>
 @end
+
+@interface DownloadStreamHandler : NSObject <FlutterStreamHandler>
+@end

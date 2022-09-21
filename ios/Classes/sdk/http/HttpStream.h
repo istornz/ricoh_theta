@@ -14,4 +14,6 @@
 
 - (void)cancel;
 
+- (void)adjustLiveViewFps:(float)fps;
+
 @end

@@ -12,10 +12,10 @@
  */
 @interface HttpConnection ()
 {
-    NSString *_server;
-    NSURLSession *_session;
-    NSMutableArray *_infoArray;
-    HttpStream *_stream;
+  NSString *_server;
+  NSURLSession *_session;
+  NSMutableArray *_infoArray;
+  HttpStream *_stream;
 }
 @end
 
@@ -29,7 +29,7 @@
  */
 - (void)setTargetIp:(NSString* const)address;
 {
-    _server = address;
+  _server = address;
 }
 
 /**
@@ -38,7 +38,7 @@
  */
 - (BOOL)connected
 {
-    return (_sessionId != nil);
+  return (_sessionId != nil);
 }
 
 #pragma mark - Life cycle.
@@ -49,14 +49,14 @@
  */
 - (id)init
 {
-    if (self = [super init]) {
-        // Timeout settings
-        NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.timeoutIntervalForRequest = 5.0;
-
-        _session = [NSURLSession sessionWithConfiguration:config];
-    }
-    return self;
+  if (self = [super init]) {
+    // Timeout settings
+    NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    config.timeoutIntervalForRequest = 5.0;
+    
+    _session = [NSURLSession sessionWithConfiguration:config];
+  }
+  return self;
 }
 
 #pragma mark - HTTP Connections.
@@ -66,38 +66,38 @@
  */
 - (void)update
 {
-    if (_sessionId) {
-        // Create the url-request.
-        NSMutableURLRequest *request = [self createExecuteRequest];
-
-        // Create JSON data
-        NSDictionary *body = @{@"name":@"camera.updateSession",
-                               @"parameters":
-                                   @{@"sessionId":_sessionId}};
-        NSData *json = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
-
-        // Set the request-body.
-        [request setHTTPBody:json];
-
-        // Send the url-request.
-        NSURLSessionDataTask* task =
-        [_session dataTaskWithRequest:request
-                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                        NSString *newId = nil;
-                        if (!error) {
-                            NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-                            newId = [array valueForKeyPath:@"results.sessionId"];
-                            NSLog(@"result: %@", newId);
-                        } else {
-                            NSLog(@"error: %@", error);
-                        }
-
-                        if (newId) {
-                            _sessionId = newId;
-                        }
-                    }];
-        [task resume];
-    }
+  if (_sessionId) {
+    // Create the url-request.
+    NSMutableURLRequest *request = [self createExecuteRequest];
+    
+    // Create JSON data
+    NSDictionary *body = @{@"name":@"camera.updateSession",
+                           @"parameters":
+                             @{@"sessionId":_sessionId}};
+    NSData *json = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
+    
+    // Set the request-body.
+    [request setHTTPBody:json];
+    
+    // Send the url-request.
+    NSURLSessionDataTask* task =
+    [_session dataTaskWithRequest:request
+                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+      NSString *newId = nil;
+      if (!error) {
+        NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+        newId = [array valueForKeyPath:@"results.sessionId"];
+        NSLog(@"result: %@", newId);
+      } else {
+        NSLog(@"error: %@", error);
+      }
+      
+      if (newId) {
+        _sessionId = newId;
+      }
+    }];
+    [task resume];
+  }
 }
 
 /**
@@ -106,33 +106,33 @@
  */
 - (void)close:(void(^ const)())block
 {
-    if (self->_sessionId) {
-        // Stop live view
-        [_stream cancel];
-
-        // Create the url-request.
-        NSMutableURLRequest *request = [self createExecuteRequest];
-
-        // Create JSON data
-        NSDictionary *body = @{
-          @"name":@"camera.closeSession",
-          @"parameters":
-              @{ @"sessionId":self->_sessionId }
-        };
-        NSData *json = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
-
-        // Set the request-body.
-        [request setHTTPBody:json];
-
-        // Send the url-request.
-        NSURLSessionDataTask* task =
-        [self->_session dataTaskWithRequest:request
-                         completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                             block();
-                         }];
-        [task resume];
-        self->_sessionId = nil;
-    }
+  if (self->_sessionId) {
+    // Stop live view
+    [_stream cancel];
+    
+    // Create the url-request.
+    NSMutableURLRequest *request = [self createExecuteRequest];
+    
+    // Create JSON data
+    NSDictionary *body = @{
+      @"name":@"camera.closeSession",
+      @"parameters":
+        @{ @"sessionId":self->_sessionId }
+    };
+    NSData *json = [NSJSONSerialization dataWithJSONObject:body options:0 error:nil];
+    
+    // Set the request-body.
+    [request setHTTPBody:json];
+    
+    // Send the url-request.
+    NSURLSessionDataTask* task =
+    [self->_session dataTaskWithRequest:request
+                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+      block();
+    }];
+    [task resume];
+    self->_sessionId = nil;
+  }
 }
 
 /**
@@ -141,30 +141,30 @@
  */
 - (void)getDeviceInfo:(void(^const )(const HttpDeviceInfo* const info))block
 {
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createRequest:@"/osc/info" method:@"GET"];
-
-    // Do not set body for GET requests
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-    [self->_session dataTaskWithRequest:request
-                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                          HttpDeviceInfo* info = [[HttpDeviceInfo alloc] init];
-                          if (!error) {
-                              NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-                              info.model = [array valueForKeyPath:@"model"];
-                              info.firmware_version = [array valueForKeyPath:@"firmwareVersion"];
-                              info.serial_number = [array valueForKeyPath:@"serialNumber"];
-                              NSLog(@"result: %@", data);
-                              block(info);
-                          } else {
-                              NSLog(@"error: %@", error);
-                              block(nil);
-                          }
-                          
-                      }];
-    [task resume];
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createRequest:@"/osc/info" method:@"GET"];
+  
+  // Do not set body for GET requests
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    HttpDeviceInfo* info = [[HttpDeviceInfo alloc] init];
+    if (!error) {
+      NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+      info.model = [array valueForKeyPath:@"model"];
+      info.firmware_version = [array valueForKeyPath:@"firmwareVersion"];
+      info.serial_number = [array valueForKeyPath:@"serialNumber"];
+      NSLog(@"result: %@", data);
+      block(info);
+    } else {
+      NSLog(@"error: %@", error);
+      block(nil);
+    }
+    
+  }];
+  [task resume];
 }
 
 /**
@@ -173,15 +173,15 @@
  */
 - (NSArray*)getImageInfoes
 {
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createExecuteRequest];
-    HttpFileList *fileList = [[HttpFileList alloc] initWithRequest:request];
-
-    NSUInteger* token;
-    do {
-        token = [fileList getList:10];
-    } while (token);
-    return fileList.infoArray;
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createExecuteRequest];
+  HttpFileList *fileList = [[HttpFileList alloc] initWithRequest:request];
+  
+  NSUInteger* token;
+  do {
+    token = [fileList getList:10];
+  } while (token);
+  return fileList.infoArray;
 }
 
 /**
@@ -191,56 +191,56 @@
  */
 - (NSData*)getThumb:(NSString*)fileId
 {
-    // Semaphore for synchronization (cannot be entered until signal is called)
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-
-    if(fileId != NULL){
-        NSString* thumbFile = [NSString stringWithFormat:@"%@%@",fileId,@"?type=thumb"];
-       // request = [self createRequest:thumbFile method:@"GET"];
-        
-        NSURL *url = [NSURL URLWithString:thumbFile];
-        
-        // Create the url-request.
-        request = [NSMutableURLRequest requestWithURL:url];
-        
-        // Set the method(HTTP-POST)
-        [request setHTTPMethod:@"GET"];
-        
-        [request setValue:@"application/json; charaset=utf-8" forHTTPHeaderField:@"Content-Type"];
-
-    }
+  // Semaphore for synchronization (cannot be entered until signal is called)
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+  
+  if(fileId != NULL){
+    NSString* thumbFile = [NSString stringWithFormat:@"%@%@",fileId,@"?type=thumb"];
+    // request = [self createRequest:thumbFile method:@"GET"];
     
-    // Create JSON data
-/*    NSDictionary *body = @{@"name": @"camera.listFiles",
-                           @"parameters":
-                               @{@"fileUrl": fileId,   // ID of file to be acquired
-                                 @"_type": @"thumb"}}; // Type of file to be acquired
-
-    // Set the request-body.
-    [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
-*/
-    __block NSData *output;
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-    [self->_session dataTaskWithRequest:request
-                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                          if (!error) {
-                              output = data;
-                              NSLog(@"result: %@", response);
-                          } else {
-                              NSLog(@"error: %@", error);
-                          }
-                          dispatch_semaphore_signal(semaphore);
-                      }];
-    [task resume];
-
-    // Wait until signal is called
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    return output;
+    NSURL *url = [NSURL URLWithString:thumbFile];
+    
+    // Create the url-request.
+    request = [NSMutableURLRequest requestWithURL:url];
+    
+    // Set the method(HTTP-POST)
+    [request setHTTPMethod:@"GET"];
+    
+    [request setValue:@"application/json; charaset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    
+  }
+  
+  // Create JSON data
+  /*    NSDictionary *body = @{@"name": @"camera.listFiles",
+   @"parameters":
+   @{@"fileUrl": fileId,   // ID of file to be acquired
+   @"_type": @"thumb"}}; // Type of file to be acquired
+   
+   // Set the request-body.
+   [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
+   */
+  __block NSData *output;
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (!error) {
+      output = data;
+      NSLog(@"result: %@", response);
+    } else {
+      NSLog(@"error: %@", error);
+    }
+    dispatch_semaphore_signal(semaphore);
+  }];
+  [task resume];
+  
+  // Wait until signal is called
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  return output;
 }
 
 /**
@@ -249,58 +249,58 @@
  */
 - (HttpStorageInfo*)getStorageInfo
 {
-    // Set still image as shooting mode (to acquire size set for still images)
-    // Continue session
-    [self setOptions:@{@"captureMode":@"image"}];
-
-    // Semaphore for synchronization (cannot be entered until signal is called)
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createExecuteRequest];
-
-    // Create JSON data
-    NSDictionary *body = @{@"name": @"camera.getOptions",
-                           @"parameters":
-                               @{
-                                 @"optionNames":
-                                     @[@"remainingPictures",
-                                       @"remainingSpace",
-                                       @"totalSpace",
-                                       @"fileFormat"]}};
-
-    // Set the request-body.
-    [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
-
-    __block HttpStorageInfo *info = [[HttpStorageInfo alloc] init];
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-        [self->_session dataTaskWithRequest:request
-              completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                  if (!error) {
-                      // Acquire storage information
-                      NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-                      NSArray *options = [array valueForKeyPath:@"results.options"];
-                      info.free_space_in_images = [[options valueForKey:@"remainingPictures"] unsignedLongValue]; // Number of images
-                      info.free_space_in_bytes = [[options valueForKey:@"remainingSpace"] unsignedLongValue];     //byte
-                      info.max_capacity = [[options valueForKey:@"totalSpace"] unsignedLongValue];                //byte
-
-                      // Acquire file format setting
-                      NSArray *fileFormat = [options valueForKey:@"fileFormat"];
-                      info.image_width = [[fileFormat valueForKey:@"width"] unsignedLongValue];
-                      info.image_height = [[fileFormat valueForKey:@"height"] unsignedLongValue];
-                      NSLog(@"result: %@", info);
-                  } else {
-                      NSLog(@"error: %@", error);
-                  }
-                  dispatch_semaphore_signal(semaphore);
-              }];
-    [task resume];
-
-    // Wait until signal is called
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    return info;
+  // Set still image as shooting mode (to acquire size set for still images)
+  // Continue session
+  [self setOptions:@{@"captureMode":@"image"}];
+  
+  // Semaphore for synchronization (cannot be entered until signal is called)
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createExecuteRequest];
+  
+  // Create JSON data
+  NSDictionary *body = @{@"name": @"camera.getOptions",
+                         @"parameters":
+                           @{
+                             @"optionNames":
+                               @[@"remainingPictures",
+                                 @"remainingSpace",
+                                 @"totalSpace",
+                                 @"fileFormat"]}};
+  
+  // Set the request-body.
+  [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
+  
+  __block HttpStorageInfo *info = [[HttpStorageInfo alloc] init];
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (!error) {
+      // Acquire storage information
+      NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+      NSArray *options = [array valueForKeyPath:@"results.options"];
+      info.free_space_in_images = [[options valueForKey:@"remainingPictures"] unsignedLongValue]; // Number of images
+      info.free_space_in_bytes = [[options valueForKey:@"remainingSpace"] unsignedLongValue];     //byte
+      info.max_capacity = [[options valueForKey:@"totalSpace"] unsignedLongValue];                //byte
+      
+      // Acquire file format setting
+      NSArray *fileFormat = [options valueForKey:@"fileFormat"];
+      info.image_width = [[fileFormat valueForKey:@"width"] unsignedLongValue];
+      info.image_height = [[fileFormat valueForKey:@"height"] unsignedLongValue];
+      NSLog(@"result: %@", info);
+    } else {
+      NSLog(@"error: %@", error);
+    }
+    dispatch_semaphore_signal(semaphore);
+  }];
+  [task resume];
+  
+  // Wait until signal is called
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  return info;
 }
 
 /**
@@ -309,33 +309,33 @@
  */
 -(NSNumber*)getBatteryLevel
 {
-    // Semaphore for synchronization (cannot be entered until signal is called)
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createRequest:@"/osc/state" method:@"POST"];
-
-    __block NSNumber *batteryLevel;
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-    [self->_session dataTaskWithRequest:request
-                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                          if (!error) {
-                              NSArray* array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-                              NSArray* state = [array valueForKey:@"state"];
-                              batteryLevel = [state valueForKey:@"batteryLevel"];
-                              NSLog(@"result: %@", batteryLevel);
-                          } else {
-                              NSLog(@"error: %@", error);
-                          }
-                          dispatch_semaphore_signal(semaphore);
-                      }];
-    [task resume];
-
-    // Wait until signal is called
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    return batteryLevel;
+  // Semaphore for synchronization (cannot be entered until signal is called)
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createRequest:@"/osc/state" method:@"POST"];
+  
+  __block NSNumber *batteryLevel;
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (!error) {
+      NSArray* array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+      NSArray* state = [array valueForKey:@"state"];
+      batteryLevel = [state valueForKey:@"batteryLevel"];
+      NSLog(@"result: %@", batteryLevel);
+    } else {
+      NSLog(@"error: %@", error);
+    }
+    dispatch_semaphore_signal(semaphore);
+  }];
+  [task resume];
+  
+  // Wait until signal is called
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  return batteryLevel;
 }
 
 /**
@@ -345,23 +345,31 @@
  */
 - (void)setImageFormat:(NSUInteger)width height:(NSUInteger)height
 {
-    [self setOptions:@{@"captureMode": @"image"}];
-    [self setOptions:@{@"fileFormat":
-                           @{@"type": @"jpeg",
-                             @"width": [NSNumber numberWithUnsignedInteger:width],
-                             @"height": [NSNumber numberWithUnsignedInteger:height]}}];
+  [self setOptions:@{@"captureMode": @"image"}];
+  [self setOptions:@{@"fileFormat":
+                       @{@"type": @"jpeg",
+                         @"width": [NSNumber numberWithUnsignedInteger:width],
+                         @"height": [NSNumber numberWithUnsignedInteger:height]}}];
+}
+
+- (void)adjustLiveViewFps:(float)fps {
+  [_stream adjustLiveViewFps:fps];
 }
 
 /**
  * Start live view
  * @param block Block called on drawing. Used to perform the drawing process of the image.
  */
-- (void)startLiveView:(void(^ const)(NSData *frameData))block
+- (void)startLiveView:(void(^ const)(NSData *frameData))block andFps:(float)fps
 {
-        NSMutableURLRequest *request = [self createExecuteRequest];
-        _stream = [[HttpStream alloc] initWithRequest:request];
-        [_stream setDelegate:block];
-        [_stream getData];
+  NSMutableURLRequest *request = [self createExecuteRequest];
+  _stream = [[HttpStream alloc] initWithRequest:request];
+  [_stream setDelegate:block];
+  [_stream getData];
+  
+  if (fps) {
+    [_stream adjustLiveViewFps:fps];
+  }
 }
 
 /**
@@ -396,51 +404,51 @@
  */
 - (HttpImageInfo*)takePicture
 {
-    // Stop live view
-    [_stream cancel];
-
-    // Set still image as shooting mode
-    // Continue session
-    [self setOptions:@{@"captureMode":@"image"}];
-
-    // Semaphore for synchronization (cannot be entered until signal is called)
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createExecuteRequest];
-
-    // Create JSON data
-    NSDictionary *body = @{@"name": @"camera.takePicture"};
-
-    // Set the request-body.
-    [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
-
-    __block NSString *commandId;
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-    [self->_session dataTaskWithRequest:request
-                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                          if (!error) {
-                              NSArray* array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-                              commandId = [array valueForKey:@"id"];
-                              NSLog(@"commandId: %@", commandId);
-                          } else {
-                              NSLog(@"error: %@", error);
-                          }
-                          dispatch_semaphore_signal(semaphore);
-                      }];
-    [task resume];
-
-    // Wait until signal is called
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-    HttpImageInfo *resultInfo = [self waitCommandComplete:commandId];
-
-    // Resume live view
-    [_stream getData];
-
-    return resultInfo;
+  // Stop live view
+  [_stream cancel];
+  
+  // Set still image as shooting mode
+  // Continue session
+  [self setOptions:@{@"captureMode":@"image"}];
+  
+  // Semaphore for synchronization (cannot be entered until signal is called)
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createExecuteRequest];
+  
+  // Create JSON data
+  NSDictionary *body = @{@"name": @"camera.takePicture"};
+  
+  // Set the request-body.
+  [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
+  
+  __block NSString *commandId;
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (!error) {
+      NSArray* array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+      commandId = [array valueForKey:@"id"];
+      NSLog(@"commandId: %@", commandId);
+    } else {
+      NSLog(@"error: %@", error);
+    }
+    dispatch_semaphore_signal(semaphore);
+  }];
+  [task resume];
+  
+  // Wait until signal is called
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  
+  HttpImageInfo *resultInfo = [self waitCommandComplete:commandId];
+  
+  // Resume live view
+  [_stream getData];
+  
+  return resultInfo;
 }
 
 /**
@@ -449,85 +457,84 @@
  */
 - (HttpImageInfo*)waitCommandComplete:(NSString*)commandId
 {
-    if (commandId != nil) {
-        // Create timer and wait until process is completed
-        NSMutableURLRequest *requestForStatus = [self createRequest:@"/osc/commands/status" method:@"POST"];
-        HttpStatusTimer *timer = [[HttpStatusTimer alloc] initWithRequest:requestForStatus];
-        NSString *status = [timer run:commandId];
-
-        if ([status isEqualToString:@"done"]) {
-            // Create the url-request.
-            NSMutableURLRequest *requestForList = [self createExecuteRequest];
-            HttpFileList *fileList = [[HttpFileList alloc] initWithRequest:requestForList];
-
-            NSUInteger* token;
-            do {
-                token = [fileList getList:1];
-                HttpImageInfo *info = fileList.infoArray.firstObject;
-                if ([info.file_id isEqualToString:timer.fileUrl]) {
-                    return info;
-                }
-            } while (token != 0);
+  if (commandId != nil) {
+    // Create timer and wait until process is completed
+    NSMutableURLRequest *requestForStatus = [self createRequest:@"/osc/commands/status" method:@"POST"];
+    HttpStatusTimer *timer = [[HttpStatusTimer alloc] initWithRequest:requestForStatus];
+    NSString *status = [timer run:commandId];
+    
+    if ([status isEqualToString:@"done"]) {
+      // Create the url-request.
+      NSMutableURLRequest *requestForList = [self createExecuteRequest];
+      HttpFileList *fileList = [[HttpFileList alloc] initWithRequest:requestForList];
+      
+      NSUInteger* token;
+      do {
+        token = [fileList getList:1];
+        HttpImageInfo *info = fileList.infoArray.firstObject;
+        if ([info.file_id isEqualToString:timer.fileUrl]) {
+          return info;
         }
+      } while (token != 0);
     }
-    return nil;
+  }
+  return nil;
 }
 
 /**
  * Delete specified file
- * @param info Information of file to be deleted
  * @return Delete process successful?
  */
-- (BOOL)deleteImage:(HttpImageInfo*)info
+- (BOOL)deleteImage:(NSString *)fileId
 {
-    // Semaphore for synchronization (cannot be entered until signal is called)
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createExecuteRequest];
-
-    // Create JSON data
-    NSDictionary *body = @{@"name": @"camera.delete",
-                           @"parameters":
-                               @{@"fileUri": info.file_id}};
-
-    // Set the request-body.
-    [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
-
-    __block NSString *status;
-    __block NSString *commandId = nil;
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-    [self->_session dataTaskWithRequest:request
-                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                          if (!error) {
-                              NSArray* array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-                              status = [array valueForKey:@"state"];
-                              commandId = [array valueForKey:@"id"];
-                              NSLog(@"commandId: %@", commandId);
-                          } else {
-                              NSLog(@"error: %@", error);
-                          }
-                          dispatch_semaphore_signal(semaphore);
-                      }];
-    [task resume];
-
-    // Wait until signal is called
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-    if ([status isEqualToString:@"done"]) {
-        return YES;
-    } else if (commandId != nil) {
-        // Create timer and wait until process is completed
-        NSMutableURLRequest *requestForStatus = [self createRequest:@"/osc/commands/status" method:@"POST"];
-        HttpStatusTimer *timer = [[HttpStatusTimer alloc] initWithRequest:requestForStatus];
-        status = [timer run:commandId];
-        if ([status isEqualToString:@"done"]) {
-            return YES;
-        }
+  // Semaphore for synchronization (cannot be entered until signal is called)
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createExecuteRequest];
+  
+  // Create JSON data
+  NSDictionary *body = @{@"name": @"camera.delete",
+                         @"parameters":
+                           @{@"fileUri": fileId}};
+  
+  // Set the request-body.
+  [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
+  
+  __block NSString *status;
+  __block NSString *commandId = nil;
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (!error) {
+      NSArray* array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+      status = [array valueForKey:@"state"];
+      commandId = [array valueForKey:@"id"];
+      NSLog(@"commandId: %@", commandId);
+    } else {
+      NSLog(@"error: %@", error);
     }
-    return NO;
+    dispatch_semaphore_signal(semaphore);
+  }];
+  [task resume];
+  
+  // Wait until signal is called
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  
+  if ([status isEqualToString:@"done"]) {
+    return YES;
+  } else if (commandId != nil) {
+    // Create timer and wait until process is completed
+    NSMutableURLRequest *requestForStatus = [self createRequest:@"/osc/commands/status" method:@"POST"];
+    HttpStatusTimer *timer = [[HttpStatusTimer alloc] initWithRequest:requestForStatus];
+    status = [timer run:commandId];
+    if ([status isEqualToString:@"done"]) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 /**
@@ -536,8 +543,8 @@
  */
 - (NSMutableURLRequest*)createExecuteRequest
 {
-    // Create the url-request.
-    return [self createRequest:@"/osc/commands/execute" method:@"POST"];
+  // Create the url-request.
+  return [self createRequest:@"/osc/commands/execute" method:@"POST"];
 }
 
 
@@ -549,36 +556,36 @@
  */
 - (void)setOptions:(NSDictionary*)options
 {
-    // Semaphore for synchronization (cannot be entered until signal is called)
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [self createExecuteRequest];
-
-    // Create JSON data
-    NSDictionary *body = @{@"name": @"camera.setOptions",
-                           @"parameters":
-                               @{
-                                 @"options":options}};
-
-    // Set the request-body.
-    [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
-
-    // Send the url-request.
-    NSURLSessionDataTask* task =
-    [self->_session dataTaskWithRequest:request
-                      completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-                          if (!error) {
-                              NSLog(@"result: %@", response);
-                          } else {
-                              NSLog(@"error: %@", error);
-                          }
-                          dispatch_semaphore_signal(semaphore);
-                      }];
-    [task resume];
-
-    // Wait until signal is called
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  // Semaphore for synchronization (cannot be entered until signal is called)
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [self createExecuteRequest];
+  
+  // Create JSON data
+  NSDictionary *body = @{@"name": @"camera.setOptions",
+                         @"parameters":
+                           @{
+                             @"options":options}};
+  
+  // Set the request-body.
+  [request setHTTPBody:[NSJSONSerialization dataWithJSONObject:body options:0 error:nil]];
+  
+  // Send the url-request.
+  NSURLSessionDataTask* task =
+  [self->_session dataTaskWithRequest:request
+                    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (!error) {
+      NSLog(@"result: %@", response);
+    } else {
+      NSLog(@"error: %@", error);
+    }
+    dispatch_semaphore_signal(semaphore);
+  }];
+  [task resume];
+  
+  // Wait until signal is called
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 /**
@@ -589,18 +596,18 @@
  */
 - (NSMutableURLRequest*)createRequest:(NSString* const)protocol method:(NSString* const)method
 {
-    NSString *string = [NSString stringWithFormat:@"http://%@%@", _server, protocol];
-    NSURL *url = [NSURL URLWithString:string];
-
-    // Create the url-request.
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-
-    // Set the method(HTTP-POST)
-    [request setHTTPMethod:method];
-
-    [request setValue:@"application/json; charaset=utf-8" forHTTPHeaderField:@"Content-Type"];
-
-    return request;
+  NSString *string = [NSString stringWithFormat:@"http://%@%@", _server, protocol];
+  NSURL *url = [NSURL URLWithString:string];
+  
+  // Create the url-request.
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  
+  // Set the method(HTTP-POST)
+  [request setHTTPMethod:method];
+  
+  [request setValue:@"application/json; charaset=utf-8" forHTTPHeaderField:@"Content-Type"];
+  
+  return request;
 }
 
 @end
